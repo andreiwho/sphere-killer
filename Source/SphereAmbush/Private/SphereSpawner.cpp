@@ -5,6 +5,7 @@
 #include "Math/UnrealMathUtility.h"
 #include "EnemySphere.h"
 #include "DrawDebugHelpers.h"
+#include "EngineUtils.h"
 
 // Sets default values
 ASphereSpawner::ASphereSpawner()
@@ -18,6 +19,13 @@ ASphereSpawner::ASphereSpawner()
 void ASphereSpawner::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// Bind regen to space for debug purposes
+	PlayerInputComponent = Cast<UInputComponent>(GetWorld()->GetFirstPlayerController()->GetComponentByClass(UInputComponent::StaticClass()));
+	check(PlayerInputComponent);
+	PlayerInputComponent->BindAction(TEXT("Jump"), IE_Pressed, this, &ASphereSpawner::NextWave);
+	
+	// Set the origin
 	SpawnSpheres();
 }
 
@@ -30,7 +38,7 @@ void ASphereSpawner::Tick(float DeltaTime)
 	{
 		FTransform sceneCenter{ FTransform::Identity };
 		sceneCenter.SetRotation(FQuat{ FVector{ 0.0f, 1.0f, 0.0f }, FMath::DegreesToRadians(90.0f) });
-		sceneCenter.SetTranslation({ 0.0f, 0.0f, 55.0f });
+		sceneCenter.SetTranslation({SpawnOrigin.X, SpawnOrigin.Y, 55.0f });
 		// Draw the debug circle for inner spawn zone
 		static constexpr int32 CIRCLE_SEGMENTS = 64;
 		DrawDebugCircle(GetWorld(), sceneCenter.ToMatrixNoScale(), InnerSpawnRadius, CIRCLE_SEGMENTS, FColor::Red, false, -1.0f, 0U, 4.0f, false);
@@ -74,10 +82,12 @@ void ASphereSpawner::SpawnSpheres()
 {
 	static constexpr float MinDistanceFromCenter = 250.0f;
 
+	// Clear spheres before creating new ones
+	ClearSpheres();
+
 	// Get the player positition and set own location to this value
 	// Every wave starts from the players' position
-	FVector playerPosition = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation();
-	SetActorLocation(playerPosition);
+	SpawnOrigin = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation();
 
 	// Keep track of all positions to prevent sphere overlapping
 	TArray<FVector> positions{};
@@ -87,22 +97,30 @@ void ASphereSpawner::SpawnSpheres()
 	auto Spawn = [&](int count, float innerRadius, float outterRadius) {
 		int spawnedSpheresCount = 0;
 		while(spawnedSpheresCount < count) {
-			FVector point = PickRandomPointInRadius(GetActorLocation(), innerRadius, outterRadius, bUseRandomSphereHeight, MinZValue, MaxZValue);
+			FVector point = PickRandomPointInRadius(SpawnOrigin, innerRadius, outterRadius, bUseRandomSphereHeight, MinZValue, MaxZValue);
 
 			// Check if distance is less than minDist, if yes -> return
 			if (positions.Num() == 0) {
 				SpawnSingleSphere(GetWorld(), SphereSpawnClass, point, SphereRadiusScale);
 				positions.Add(point);
 			} else {
-				// Sort the positions of the spheres
+				// Sort the positions of the spheres to get the lowest one at the beginning
+				// Maybe not really fast, but for not really big amount of spheres, it may not take a lot time
 				positions.Sort([&](const FVector& lhs, const FVector& rhs) {
 					const float lhsDist = FVector::Distance(point, lhs);
 					const float rhsDist = FVector::Distance(point, rhs);
 					return lhsDist < rhsDist;
 				});
 
+				
+				// Have to calculate the bias since spheres change sizes per wave
+				constexpr float approxSphereBaseRadius = 50.0f;
+				const float distanceBias = (approxSphereBaseRadius * 2 * SphereRadiusScale);
+				
 				// If the distance is less than allowed for the spheres, then create one, otherwise continue
-				if (FVector::Distance(point, positions[0]) >= MinSphereDistance) {
+				float distanceToClosestSphere = FVector::Distance(point, positions[0]);
+				if (distanceToClosestSphere >= MinSphereDistance + distanceBias) {
+					// UE_LOG(LogTemp, Warning, TEXT("Spawning a sphere at %f from the closest sphere"), distanceToClosestSphere);
 					SpawnSingleSphere(GetWorld(), SphereSpawnClass, point, SphereRadiusScale);
 					positions.Add(point);
 				} else {
@@ -121,5 +139,34 @@ void ASphereSpawner::SpawnSpheres()
 
 	// Spawn bonus spheres outside the inner circle
 	Spawn(OverallSphereCount - InnerSphereCount, InnerSpawnRadius, OuterSpawnRadius);
+}
+
+void ASphereSpawner::ClearSpheres() {
+	TArray<AEnemySphere*> spheres{};
+	for (TActorIterator<AEnemySphere> it{ GetWorld() }; it; ++it) {
+		it->Destroy();
+	}
+}
+
+void ASphereSpawner::NextWave() {
+	ClearSpheres();
+	
+	// Set location to the players position
+	SpawnOrigin = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation();
+
+	WaveIndex++;
+	
+	// Change sphere count for the next wave
+	OverallSphereCount += static_cast<int>(static_cast<float>(OverallSphereCount) * WaveSphereCountChangeRate);
+
+	// Change sphere radius for the next wave
+	SphereRadiusScale -= SphereRadiusWaveFactor;
+	SphereRadiusScale = FMath::Clamp(SphereRadiusScale, 0.05f, 100.0f);
+
+	// Increase the outer spawn radius
+	OuterSpawnRadius += static_cast<int>(static_cast<float>(OuterSpawnRadius) * WaveRadiusChangeRate);
+
+
+	SpawnSpheres();
 }
 
