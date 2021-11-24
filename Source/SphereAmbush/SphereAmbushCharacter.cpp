@@ -168,11 +168,13 @@ void ASphereAmbushCharacter::OnFire()
 		}
 	}
 
+#if 0
 	// try and play the sound if specified
 	if (FireSound != nullptr)
 	{
 		UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
 	}
+#endif
 
 	// try and play a firing animation if specified
 	if (FireAnimation != nullptr)
