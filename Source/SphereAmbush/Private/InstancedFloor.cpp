@@ -32,8 +32,8 @@ void AInstancedFloor::GenerateMesh() {
 
 	// Generate transforms for instances
 	auto meshBounds = InstancedMesh->GetStaticMesh()->GetBounds().GetBox().GetSize();
-	for (unsigned int x = 0; x < GridSize; ++x) {
-		for (unsigned int y = 0; y < GridSize; ++y) {
+	for (int x = -GridSize/2; x < GridSize/2; ++x) {
+		for (int y = -GridSize/2; y < GridSize/2; ++y) {
 			// Calculate the position of the new instance
 			FVector position = {
 				static_cast<float>(x) * meshBounds.X + (GridSpacing*x),
@@ -49,6 +49,8 @@ void AInstancedFloor::GenerateMesh() {
 
 	// Put instances into the mesh
 	InstancedMesh->AddInstances(instanceTransforms, false);
+
+	InstancedMesh->MarkRenderDynamicDataDirty();
 }
 
 // Called every frame
