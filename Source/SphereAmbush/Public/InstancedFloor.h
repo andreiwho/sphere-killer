@@ -30,7 +30,7 @@ public:
 private:
     // The size of the instanced grid
     UPROPERTY(EditAnywhere)
-    unsigned int GridSize{ 10 };
+    int GridSize{ 10 };
 
     // The spacing between each grid cell
     UPROPERTY(EditAnywhere)
