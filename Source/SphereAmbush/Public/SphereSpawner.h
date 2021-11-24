@@ -27,15 +27,34 @@ public:
 	void SpawnSpheres();
 private:
 	static constexpr float s_SphereZ = 300.0f;
+	
+private:	
+	int WaveIndex = 0;
+
+	UPROPERTY(EditAnywhere)
+	bool bUseRandomSphereHeight{ true };
+
+	UPROPERTY(EditAnywhere)
+	float MinZValue{ 200.0f };
+
+	UPROPERTY(EditAnywhere)
+	float MaxZValue{ 500.0f };
+
 
 	UPROPERTY(EditAnywhere)
 	class UClass* SphereSpawnClass{nullptr};
 
 	UPROPERTY(EditAnywhere)
-	int SphereCount{ 15 };
+	int InnerSphereCount{ 10 };
 
 	UPROPERTY(EditAnywhere)
-	float SpawnRadius{ 2000.0f };
+	int OverallSphereCount{ 15 };
+
+	UPROPERTY(EditAnywhere)
+	float InnerSpawnRadius{ 1500.0f };
+
+	UPROPERTY(EditAnywhere)
+	float OuterSpawnRadius{ 2000.0f };
 
 	UPROPERTY(EditAnywhere)
 	float MinSphereDistance{ 80.0f };
@@ -44,5 +63,9 @@ private:
 	float WaveRadiusChangeRate{ 0.05f };
 
 	UPROPERTY(EditAnywhere)
-	float WaveSpeedChangeRate{ 0.03f };
+	float SphereRadiusScale{ 0.5f };
+
+	// Each wave the spawned sphere will be smaller by this factor value
+	UPROPERTY(EditAnywhere)
+	float SphereRadiusWaveFactor{ 0.05f };
 };

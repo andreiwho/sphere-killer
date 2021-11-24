@@ -7,15 +7,10 @@
 
 // Sets default values
 AEnemySphere::AEnemySphere()
-    : StaticMesh(CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Static Mesh"))),
-    CollisionComp(CreateDefaultSubobject<USphereComponent>(TEXT("Collision"))) {
-    // Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+    : StaticMesh(CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Static Mesh"))) {
+
     PrimaryActorTick.bCanEverTick = true;
     SetRootComponent(StaticMesh);
-    StaticMesh->SetSimulatePhysics(true);
-
-    CollisionComp->InitSphereRadius(100.0f);
-    CollisionComp->OnComponentHit.AddDynamic(this, &AEnemySphere::OnHit);
 }
 
 // Called when the game starts or when spawned
@@ -28,6 +23,8 @@ void AEnemySphere::BeginPlay() {
     check(Physics != nullptr);
 
     Physics->OnComponentHit.AddDynamic(this, &AEnemySphere::OnHit);
+
+    AnimationOffset = FMath::RandRange(0.0f, 60.0f);
 }
 
 
@@ -44,13 +41,13 @@ void AEnemySphere::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrim
 // Called every frame
 void AEnemySphere::Tick(float DeltaTime) {
     Super::Tick(DeltaTime);
-    auto playerPawn = Player->GetPawn();
 
-    FVector playerForward = playerPawn->GetActorForwardVector();
-    FVector playerLocation = playerPawn->GetActorLocation();
-    FVector thisLocation = GetActorLocation();
-    FVector newLocation = FMath::VInterpTo(thisLocation, playerLocation + playerForward, DeltaTime, ChasingSpeed);
+    // Use waving animation
+    float currentTime = GetWorld()->GetTimeSeconds() + AnimationOffset;
+    float zPos = FMath::Sin(currentTime);
 
-    SetActorLocation(newLocation);
+    auto location = GetActorLocation();
+    location.Z += zPos * DeltaTime * 10.0f;
+    SetActorLocation(location);
 }
 

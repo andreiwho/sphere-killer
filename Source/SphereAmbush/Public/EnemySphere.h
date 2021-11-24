@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "EnemySphere.generated.h"
 
+
 UCLASS()
 class SPHEREAMBUSH_API AEnemySphere : public AActor
 {
@@ -37,6 +38,7 @@ private:
 	float ChasingSpeed = 10.0f;
 
 	class UPrimitiveComponent* Physics{nullptr};
-
-	class USphereComponent* CollisionComp{ nullptr };
+	
+	// Random number to make animation kind of offset
+	float AnimationOffset{ 0.0f };
 };
