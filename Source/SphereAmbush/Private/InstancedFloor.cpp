@@ -19,13 +19,19 @@ void AInstancedFloor::BeginPlay()
 }
 
 void AInstancedFloor::GenerateMesh() {
+	// Clear the mesh
 	InstancedMesh->ClearInstances();
+	
+	// Allocate an array to hold the GridSize^2 transform instances
+	TArray<FTransform> instanceTransforms;
+	instanceTransforms.Reserve(GridSize * GridSize);
 
 	// Store it here to not recreate the transform each time in a loop
 	FTransform transform{FTransform::Identity};
 
-	auto meshBounds = InstancedMesh->GetStaticMesh()->GetBounds().GetBox().GetSize();
 
+	// Generate transforms for instances
+	auto meshBounds = InstancedMesh->GetStaticMesh()->GetBounds().GetBox().GetSize();
 	for (unsigned int x = 0; x < GridSize; ++x) {
 		for (unsigned int y = 0; y < GridSize; ++y) {
 			// Calculate the position of the new instance
@@ -36,15 +42,13 @@ void AInstancedFloor::GenerateMesh() {
 			};
 
 			transform.SetTranslation(position);
-			InstancedMesh->AddInstance(transform);
-
-			// Just for logging (not really neaded in Dist)
-#ifndef DEBUG
-			UE_LOG(LogTemp, Warning, TEXT("Created floor instance with bounds: %s"), *meshBounds.ToString());
-#endif
+			instanceTransforms.Add(transform);
+			// InstancedMesh->AddInstance(transform);
 		}
 	}
 
+	// Put instances into the mesh
+	InstancedMesh->AddInstances(instanceTransforms, false);
 }
 
 // Called every frame
