@@ -3,12 +3,16 @@
 
 #include "EnemySphere.h"
 #include "Components/SphereComponent.h"
+#include "Particles/ParticleSystem.h"
+#include "Kismet/GameplayStatics.h"
+
 #include "../SphereAmbushProjectile.h"
 
 // Sets default values
 AEnemySphere::AEnemySphere()
     : StaticMesh(CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Static Mesh"))),
-        AirWavingComponent(CreateDefaultSubobject<UAirWaving>(TEXT("Waving"))) {
+        AirWavingComponent(CreateDefaultSubobject<UAirWaving>(TEXT("Waving"))),
+        EmitterComponent(CreateDefaultSubobject<UEmitterOnDestroy>(TEXT("Destroy Emitter"))) {
 
     PrimaryActorTick.bCanEverTick = true;
     SetRootComponent(StaticMesh);
@@ -35,6 +39,10 @@ void AEnemySphere::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrim
             Destroy();
         }
     }
+}
+
+void AEnemySphere::Destroyed() {
+    Super::Destroyed();
 }
 
 // Called every frame

@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "AirWaving.h"
+#include "EmitterOnDestroy.h"
 #include "EnemySphere.generated.h"
 
 
@@ -27,6 +28,7 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+	virtual void Destroyed() override;
 
 private:
 	UPROPERTY(VisibleAnywhere)
@@ -41,4 +43,7 @@ private:
 	class UPrimitiveComponent* Physics{nullptr};
 	
 	class UAirWaving* AirWavingComponent{ nullptr };
+
+	UPROPERTY(EditAnywhere)
+	UEmitterOnDestroy* EmitterComponent;
 };

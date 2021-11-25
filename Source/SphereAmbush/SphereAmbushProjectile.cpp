@@ -3,6 +3,7 @@
 #include "SphereAmbushProjectile.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/SphereComponent.h"
+#include "Public/EmitterOnDestroy.h"
 
 ASphereAmbushProjectile::ASphereAmbushProjectile() 
 {
@@ -15,6 +16,8 @@ ASphereAmbushProjectile::ASphereAmbushProjectile()
 	// Players can't walk on it
 	CollisionComp->SetWalkableSlopeOverride(FWalkableSlopeOverride(WalkableSlope_Unwalkable, 0.f));
 	CollisionComp->CanCharacterStepUpOn = ECB_No;
+
+	EmitterComponent = CreateDefaultSubobject<UEmitterOnDestroy>(TEXT("Destroy Emitter"));
 
 	// Set as root component
 	RootComponent = CollisionComp;

@@ -22,6 +22,9 @@ class ASphereAmbushProjectile : public AActor
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
 	UProjectileMovementComponent* ProjectileMovement;
 
+	UPROPERTY(EditAnywhere)
+	class UEmitterOnDestroy* EmitterComponent{nullptr};
+
 public:
 	ASphereAmbushProjectile();
 
