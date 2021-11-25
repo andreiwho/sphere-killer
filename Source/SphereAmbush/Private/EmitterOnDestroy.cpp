@@ -26,8 +26,16 @@ void UEmitterOnDestroy::BeginPlay()
 }
 
 void UEmitterOnDestroy::OnComponentDestroyed(bool bDerrived) {
-	check(ParticleSystem);
-	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ParticleSystem, GetOwner()->GetTransform());
+	// TODO: Figure out what causes the editor to crash
+	try {
+		check(ParticleSystem);
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ParticleSystem, GetOwner()->GetTransform());
+
+		if (ExplosionSound) {
+
+			UGameplayStatics::PlaySoundAtLocation(GetWorld(), ExplosionSound, GetOwner()->GetActorLocation(), 1.0f, FMath::RandRange(0.9f, 1.5f), 0.0f, SoundAttenuation, SoundConcurrency);
+		}
+	} catch (...) {}
 	Super::OnComponentDestroyed(bDerrived);
 }
 

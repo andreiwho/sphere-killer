@@ -6,6 +6,7 @@
 #include "EnemySphere.h"
 #include "DrawDebugHelpers.h"
 #include "EngineUtils.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 ASphereSpawner::ASphereSpawner()
@@ -21,9 +22,9 @@ void ASphereSpawner::BeginPlay()
 	Super::BeginPlay();
 
 	// Bind regen to space for debug purposes
-	PlayerInputComponent = Cast<UInputComponent>(GetWorld()->GetFirstPlayerController()->GetComponentByClass(UInputComponent::StaticClass()));
-	check(PlayerInputComponent);
-	PlayerInputComponent->BindAction(TEXT("Jump"), IE_Pressed, this, &ASphereSpawner::NextWave);
+	// PlayerInputComponent = Cast<UInputComponent>(GetWorld()->GetFirstPlayerController()->GetComponentByClass(UInputComponent::StaticClass()));
+	// check(PlayerInputComponent);
+	// PlayerInputComponent->BindAction(TEXT("Jump"), IE_Pressed, this, &ASphereSpawner::NextWave);
 	
 	// Set the origin
 	SpawnSpheres();
@@ -141,6 +142,10 @@ void ASphereSpawner::SpawnSpheres()
 
 	// Spawn bonus spheres outside the inner circle
 	CurrentOuterSpheres = Spawn(OverallSphereCount - InnerSphereCount, InnerSpawnRadius, OuterSpawnRadius);
+
+	if (SpawnSound) {
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), SpawnSound, { 0.0f, 0.0f, 0.0f });
+	}
 }
 
 void ASphereSpawner::ClearSpheres() {

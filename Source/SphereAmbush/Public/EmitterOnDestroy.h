@@ -26,4 +26,13 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	class UParticleSystem* ParticleSystem{ nullptr };
+
+	UPROPERTY(EditAnywhere)
+	class USoundBase* ExplosionSound{ nullptr };
+
+	UPROPERTY(EditAnywhere)
+	class USoundAttenuation* SoundAttenuation{ nullptr };
+
+	UPROPERTY(EditAnywhere)
+	class USoundConcurrency* SoundConcurrency{ nullptr };
 };

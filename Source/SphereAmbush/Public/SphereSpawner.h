@@ -79,6 +79,9 @@ private:
 	UPROPERTY(EditAnywhere)
 	float SphereRadiusWaveFactor{ 0.005f };
 
+	UPROPERTY(EditAnywhere)
+	class USoundBase* SpawnSound{ nullptr };
+
 private:
 	int CurrentInnerSpheres{ 0 };
 	int CurrentOuterSpheres{ 0 };
