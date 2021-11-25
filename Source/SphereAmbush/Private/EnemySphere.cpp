@@ -7,7 +7,8 @@
 
 // Sets default values
 AEnemySphere::AEnemySphere()
-    : StaticMesh(CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Static Mesh"))) {
+    : StaticMesh(CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Static Mesh"))),
+        AirWavingComponent(CreateDefaultSubobject<UAirWaving>(TEXT("Waving"))) {
 
     PrimaryActorTick.bCanEverTick = true;
     SetRootComponent(StaticMesh);
@@ -23,8 +24,6 @@ void AEnemySphere::BeginPlay() {
     check(Physics != nullptr);
 
     Physics->OnComponentHit.AddDynamic(this, &AEnemySphere::OnHit);
-
-    AnimationOffset = FMath::RandRange(0.0f, 60.0f);
 }
 
 
@@ -41,13 +40,5 @@ void AEnemySphere::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrim
 // Called every frame
 void AEnemySphere::Tick(float DeltaTime) {
     Super::Tick(DeltaTime);
-
-    // Use waving animation
-    float currentTime = GetWorld()->GetTimeSeconds() + AnimationOffset;
-    float zPos = FMath::Sin(currentTime);
-
-    auto location = GetActorLocation();
-    location.Z += zPos * DeltaTime * 10.0f;
-    SetActorLocation(location);
 }
 

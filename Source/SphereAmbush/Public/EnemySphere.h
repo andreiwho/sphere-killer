@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "AirWaving.h"
 #include "EnemySphere.generated.h"
 
 
@@ -39,6 +40,5 @@ private:
 
 	class UPrimitiveComponent* Physics{nullptr};
 	
-	// Random number to make animation kind of offset
-	float AnimationOffset{ 0.0f };
+	class UAirWaving* AirWavingComponent{ nullptr };
 };
