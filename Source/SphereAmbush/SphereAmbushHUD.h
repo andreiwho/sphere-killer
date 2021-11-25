@@ -5,8 +5,6 @@
 #include "CoreMinimal.h"
 #include "GameFramework/HUD.h"
 
-#include "Public/GameStatsWidget.h"
-
 #include "SphereAmbushHUD.generated.h"
 
 UCLASS()
@@ -20,9 +18,6 @@ public:
 	/** Primary draw call for the HUD */
 	virtual void DrawHUD() override;
 
-	UFUNCTION()
-	void UpdateInnerSphereCount(int value);
-
 	virtual void BeginPlay() override;
 
 	virtual void Tick(float DeltaTime) override;
@@ -30,11 +25,5 @@ public:
 private:
 	/** Crosshair asset pointer */
 	class UTexture2D* CrosshairTex;
-
-	UPROPERTY(EditDefaultsOnly, Category="Widgets")
-	TSubclassOf<UUserWidget> GameStatsClass{nullptr};
-
-private:
-	UGameStatsWidget* StatsWidget{ nullptr };
 };
 

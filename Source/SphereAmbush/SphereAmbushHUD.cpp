@@ -35,35 +35,11 @@ void ASphereAmbushHUD::DrawHUD()
 		Canvas->DrawItem(TileItem);
 	}
 
-
-	// Draw game stats
-	{
-		const FVector2D Center(Canvas->ClipX * 0.5f, Canvas->ClipY * 0.5f);
-		const FVector2D StatsDrawPosition(Center.X, Center.Y + 150.0f);
-	}
-}
-
-
-void ASphereAmbushHUD::UpdateInnerSphereCount(int value)
-{
-	if (StatsWidget)
-	{
-		StatsWidget->UpdateInnerSphereCount(value);
-	}
 }
 
 void ASphereAmbushHUD::BeginPlay()
 {
 	Super::BeginPlay();
-
-	if (GameStatsClass)
-	{
-		StatsWidget = CreateWidget<UGameStatsWidget>(GetWorld(), GameStatsClass);
-		if (StatsWidget)
-		{
-			StatsWidget->AddToViewport();
-		}
-	}
 }
 
 void ASphereAmbushHUD::Tick(float DeltaTime)
