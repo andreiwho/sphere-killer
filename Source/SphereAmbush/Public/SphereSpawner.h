@@ -27,6 +27,7 @@ public:
 	void SpawnSpheres();
 	void ClearSpheres();
 	void NextWave();
+	void OnSphereDestroyed(float distance);
 private:
 	static constexpr float s_SphereZ = 300.0f;
 	
@@ -77,4 +78,8 @@ private:
 	// Each wave the spawned sphere will be smaller by this factor value
 	UPROPERTY(EditAnywhere)
 	float SphereRadiusWaveFactor{ 0.005f };
+
+private:
+	int CurrentInnerSpheres{ 0 };
+	int CurrentOuterSpheres{ 0 };
 };

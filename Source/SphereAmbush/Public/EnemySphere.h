@@ -8,7 +8,6 @@
 #include "EmitterOnDestroy.h"
 #include "EnemySphere.generated.h"
 
-
 UCLASS()
 class SPHEREAMBUSH_API AEnemySphere : public AActor
 {
@@ -31,11 +30,16 @@ public:
 	virtual void Destroyed() override;
 
 private:
+	void NotifySpawner();
+
+private:
 	UPROPERTY(VisibleAnywhere)
 	class UStaticMeshComponent* StaticMesh{ nullptr };
 
 	UPROPERTY(VisibleAnywhere)
 	class APlayerController* Player{ nullptr };
+
+	float DistanceToPlayer{ 0.0f };
 
 	UPROPERTY(EditAnywhere)
 	float ChasingSpeed = 10.0f;

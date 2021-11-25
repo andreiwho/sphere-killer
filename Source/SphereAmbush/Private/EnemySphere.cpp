@@ -5,6 +5,8 @@
 #include "Components/SphereComponent.h"
 #include "Particles/ParticleSystem.h"
 #include "Kismet/GameplayStatics.h"
+#include "SphereSpawner.h"
+#include "EngineUtils.h"
 
 #include "../SphereAmbushProjectile.h"
 
@@ -14,7 +16,7 @@ AEnemySphere::AEnemySphere()
         AirWavingComponent(CreateDefaultSubobject<UAirWaving>(TEXT("Waving"))),
         EmitterComponent(CreateDefaultSubobject<UEmitterOnDestroy>(TEXT("Destroy Emitter"))) {
 
-    PrimaryActorTick.bCanEverTick = true;
+    PrimaryActorTick.bCanEverTick = false;
     SetRootComponent(StaticMesh);
 }
 
@@ -28,6 +30,9 @@ void AEnemySphere::BeginPlay() {
     check(Physics != nullptr);
 
     Physics->OnComponentHit.AddDynamic(this, &AEnemySphere::OnHit);
+
+    // Get distance to player for this sphere
+    DistanceToPlayer = FVector::Distance(GetActorLocation(), GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation());
 }
 
 
@@ -35,14 +40,21 @@ void AEnemySphere::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrim
     if ((OtherActor != nullptr) && (OtherActor != this)) {
         // TODO: Check if this needs to be changed
         if (Cast<ASphereAmbushProjectile>(OtherActor)) {
-            UE_LOG(LogTemp, Warning, TEXT("Hit"));
             Destroy();
         }
     }
 }
 
 void AEnemySphere::Destroyed() {
+    NotifySpawner();
     Super::Destroyed();
+}
+
+void AEnemySphere::NotifySpawner() {
+    // The scene should have only one sphere spawner
+    for (TActorIterator<ASphereSpawner> it(GetWorld()); it; ++it) {
+        it->OnSphereDestroyed(DistanceToPlayer);
+    }
 }
 
 // Called every frame

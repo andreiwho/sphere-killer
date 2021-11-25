@@ -130,15 +130,17 @@ void ASphereSpawner::SpawnSpheres()
 
 			++spawnedSpheresCount;
 		}
+
+		return spawnedSpheresCount;
 	};
 
 	check(InnerSphereCount <= OverallSphereCount);
 
 	// Spawn main spheres inside the nearest inner circle (the circle needed to finish the wave)
-	Spawn(InnerSphereCount, MinDistanceFromCenter, InnerSpawnRadius);
+	CurrentInnerSpheres = Spawn(InnerSphereCount, MinDistanceFromCenter, InnerSpawnRadius);
 
 	// Spawn bonus spheres outside the inner circle
-	Spawn(OverallSphereCount - InnerSphereCount, InnerSpawnRadius, OuterSpawnRadius);
+	CurrentOuterSpheres = Spawn(OverallSphereCount - InnerSphereCount, InnerSpawnRadius, OuterSpawnRadius);
 }
 
 void ASphereSpawner::ClearSpheres() {
@@ -166,7 +168,17 @@ void ASphereSpawner::NextWave() {
 	// Increase the outer spawn radius
 	OuterSpawnRadius += static_cast<int>(static_cast<float>(OuterSpawnRadius) * WaveRadiusChangeRate);
 
-
 	SpawnSpheres();
+}
+
+void ASphereSpawner::OnSphereDestroyed(float distance) {
+	if (distance <= InnerSpawnRadius) {
+		CurrentInnerSpheres--;
+		if (CurrentInnerSpheres == 0) {
+			NextWave();
+		}
+	} else {
+		// Add logic to increase bonus points
+	}
 }
 
