@@ -47,6 +47,7 @@ private:
 
     class UPrimitiveComponent* Physics{ nullptr };
 
+    UPROPERTY(EditAnywhere)
     class UAirWaving* AirWavingComponent{ nullptr };
 
     UPROPERTY(EditAnywhere)

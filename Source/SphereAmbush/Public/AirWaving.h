@@ -24,5 +24,9 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	UPROPERTY(EditAnywhere)
+	float WavingDistanceThreshold{ 3000.0f };
+
 	float AnimationTimeOffset{ 0.0f };
+	float OwnerDistanceFromPlayer{ 0.0f };
 };

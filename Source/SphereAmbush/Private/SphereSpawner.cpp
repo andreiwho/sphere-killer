@@ -21,12 +21,7 @@ void ASphereSpawner::BeginPlay()
 {
     Super::BeginPlay();
 
-    // Bind regen to space for debug purposes
-    // PlayerInputComponent = Cast<UInputComponent>(GetWorld()->GetFirstPlayerController()->GetComponentByClass(UInputComponent::StaticClass()));
-    // check(PlayerInputComponent);
-    // PlayerInputComponent->BindAction(TEXT("Jump"), IE_Pressed, this, &ASphereSpawner::NextWave);
-
-    // Set the origin
+    // Spawn spheres on begin play
     SpawnSpheres();
 }
 
@@ -36,6 +31,7 @@ void ASphereSpawner::Tick(float DeltaTime)
     Super::Tick(DeltaTime);
 
     // Debug draw spawn zones
+    // Leave this for now on purpose. One can uncomment this and see how distance radiuses change from wave to wave
 #if 0
     {
         FTransform sceneCenter{ FTransform::Identity };
@@ -60,12 +56,14 @@ static FVector PickRandomPointInRadius(const FVector& origin, const float minDis
     // Get the angle of the circle to pick a point at the edge 
     float angle = FMath::RandRange(0.0f, 359.99f);
 
+    // Set default Z position of the generated sphere
     float zPosition = 200.0f;
     if (bUseRandomSphereHeight)
     {
         zPosition = FMath::RandRange(minZ, maxZ);
     }
 
+    // Generate point on a circle of random radius
     FVector newPosition = {
         FMath::Sin(angle) * distance,
         FMath::Cos(angle) * distance,
@@ -84,6 +82,8 @@ static AActor* SpawnSingleSphere(UWorld* world, UClass* klass, const FVector& lo
     return world->SpawnActor(klass, &transform);
 }
 
+
+// -
 void ASphereSpawner::SpawnSpheres()
 {
     static constexpr float MinDistanceFromCenter = 250.0f;
@@ -93,6 +93,7 @@ void ASphereSpawner::SpawnSpheres()
 
     // Get the player positition and set own location to this value
     // Every wave starts from the players' position
+    // But since players' position is locked, I don't really see a reason to do this.
     SpawnOrigin = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation();
 
     // Keep track of all positions to prevent sphere overlapping
@@ -132,10 +133,10 @@ void ASphereSpawner::SpawnSpheres()
                 float distanceToClosestSphere = FVector::Distance(point, positions[0]);
                 if (distanceToClosestSphere >= MinSphereDistance + distanceBias)
                 {
-                    // UE_LOG(LogTemp, Warning, TEXT("Spawning a sphere at %f from the closest sphere"), distanceToClosestSphere);
                     SpawnSingleSphere(GetWorld(), klass, point, SphereRadiusScale);
                     positions.Add(point);
-                } else
+                } 
+                else
                 {
                     continue;
                 }
@@ -147,6 +148,7 @@ void ASphereSpawner::SpawnSpheres()
         return spawnedSpheresCount;
     };
 
+    // The inner sphere count cannot be less than overall count.
     check(InnerSphereCount <= OverallSphereCount);
 
     // Spawn main spheres inside the nearest inner circle (the circle needed to finish the wave)
@@ -155,9 +157,10 @@ void ASphereSpawner::SpawnSpheres()
     // Spawn bonus spheres outside the inner circle
     CurrentOuterSpheres = Spawn(OuterSphereSpawnClass, OverallSphereCount - InnerSphereCount, InnerSpawnRadius, OuterSpawnRadius);
 
+    // Play sound on spawn
     if (SpawnSound)
     {
-        UGameplayStatics::PlaySoundAtLocation(GetWorld(), SpawnSound, { 0.0f, 0.0f, 0.0f });
+        UGameplayStatics::PlaySoundAtLocation(GetWorld(), SpawnSound, { 0.0f, 0.0f, 0.0f }, 1.0f, FMath::RandRange(0.8f, 1.2f));
     }
 }
 
@@ -206,7 +209,7 @@ void ASphereSpawner::OnSphereDestroyed(const FVector& position)
         }
     } else
     {
-        // Add logic to increase bonus points
+        // Add logic to increase bonus points at some point in time
     }
 }
 

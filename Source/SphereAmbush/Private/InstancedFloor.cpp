@@ -53,7 +53,7 @@ void AInstancedFloor::GenerateMesh()
     // Put instances into the mesh
     InstancedMesh->AddInstances(instanceTransforms, false);
 
-    InstancedMesh->MarkRenderDynamicDataDirty();
+    InstancedMesh->MarkRenderStateDirty();
 }
 
 // Called every frame

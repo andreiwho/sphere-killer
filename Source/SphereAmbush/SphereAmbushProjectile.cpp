@@ -30,7 +30,8 @@ ASphereAmbushProjectile::ASphereAmbushProjectile()
 	ProjectileMovement->bRotationFollowsVelocity = true;
 	ProjectileMovement->bShouldBounce = true;
 
-	// Die after 2 seconds by default
+	// Die after 10 seconds by default
+	// 10 seconds here done on purpose, since it unlocks some nice stuff with bouncing projectiles
 	InitialLifeSpan = 10.0f;
 }
 
