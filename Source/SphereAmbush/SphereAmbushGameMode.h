@@ -9,10 +9,10 @@
 UCLASS(minimalapi)
 class ASphereAmbushGameMode : public AGameModeBase
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
 public:
-	ASphereAmbushGameMode();
+    ASphereAmbushGameMode();
 };
 
 

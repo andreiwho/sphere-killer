@@ -17,7 +17,8 @@ DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
 //////////////////////////////////////////////////////////////////////////
 // ASphereAmbushCharacter
 
-ASphereAmbushCharacter::ASphereAmbushCharacter() {
+ASphereAmbushCharacter::ASphereAmbushCharacter()
+{
     // Set size for collision capsule
     GetCapsuleComponent()->InitCapsuleSize(55.f, 96.0f);
 
@@ -83,7 +84,8 @@ ASphereAmbushCharacter::ASphereAmbushCharacter() {
     //bUsingMotionControllers = true;
 }
 
-void ASphereAmbushCharacter::BeginPlay() {
+void ASphereAmbushCharacter::BeginPlay()
+{
     // Call the base class  
     Super::BeginPlay();
 
@@ -91,10 +93,12 @@ void ASphereAmbushCharacter::BeginPlay() {
     FP_Gun->AttachToComponent(Mesh1P, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));
 
     // Show or hide the two versions of the gun based on whether or not we're using motion controllers.
-    if (bUsingMotionControllers) {
+    if (bUsingMotionControllers)
+    {
         VR_Gun->SetHiddenInGame(false, true);
         Mesh1P->SetHiddenInGame(true, true);
-    } else {
+    } else
+    {
         VR_Gun->SetHiddenInGame(true, true);
         Mesh1P->SetHiddenInGame(false, true);
     }
@@ -103,7 +107,8 @@ void ASphereAmbushCharacter::BeginPlay() {
 //////////////////////////////////////////////////////////////////////////
 // Input
 
-void ASphereAmbushCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) {
+void ASphereAmbushCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
+{
     // set up gameplay key bindings
     check(PlayerInputComponent);
 
@@ -134,16 +139,21 @@ void ASphereAmbushCharacter::SetupPlayerInputComponent(class UInputComponent* Pl
     PlayerInputComponent->BindAxis("LookUpRate", this, &ASphereAmbushCharacter::LookUpAtRate);
 }
 
-void ASphereAmbushCharacter::OnFire() {
+void ASphereAmbushCharacter::OnFire()
+{
     // try and fire a projectile
-    if (ProjectileClass != nullptr) {
+    if (ProjectileClass != nullptr)
+    {
         UWorld* const World = GetWorld();
-        if (World != nullptr) {
-            if (bUsingMotionControllers) {
+        if (World != nullptr)
+        {
+            if (bUsingMotionControllers)
+            {
                 const FRotator SpawnRotation = VR_MuzzleLocation->GetComponentRotation();
                 const FVector SpawnLocation = VR_MuzzleLocation->GetComponentLocation();
                 World->SpawnActor<ASphereAmbushProjectile>(ProjectileClass, SpawnLocation, SpawnRotation);
-            } else {
+            } else
+            {
                 const FRotator SpawnRotation = GetControlRotation();
                 // MuzzleOffset is in camera space, so transform it to world space before offsetting from the character location to find the final muzzle position
                 const FVector SpawnLocation = ((FP_MuzzleLocation != nullptr) ? FP_MuzzleLocation->GetComponentLocation() : GetActorLocation()) + SpawnRotation.RotateVector(GunOffset);
@@ -160,30 +170,37 @@ void ASphereAmbushCharacter::OnFire() {
 
 #if 1
     // try and play the sound if specified
-    if (FireSound != nullptr) {
+    if (FireSound != nullptr)
+    {
         UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation(), 1.0f, FMath::RandRange(0.8f, 1.3f));
     }
 #endif
 
     // try and play a firing animation if specified
-    if (FireAnimation != nullptr) {
+    if (FireAnimation != nullptr)
+    {
         // Get the animation object for the arms mesh
         UAnimInstance* AnimInstance = Mesh1P->GetAnimInstance();
-        if (AnimInstance != nullptr) {
+        if (AnimInstance != nullptr)
+        {
             AnimInstance->Montage_Play(FireAnimation, 1.f);
         }
     }
 }
 
-void ASphereAmbushCharacter::OnResetVR() {
+void ASphereAmbushCharacter::OnResetVR()
+{
     UHeadMountedDisplayFunctionLibrary::ResetOrientationAndPosition();
 }
 
-void ASphereAmbushCharacter::BeginTouch(const ETouchIndex::Type FingerIndex, const FVector Location) {
-    if (TouchItem.bIsPressed == true) {
+void ASphereAmbushCharacter::BeginTouch(const ETouchIndex::Type FingerIndex, const FVector Location)
+{
+    if (TouchItem.bIsPressed == true)
+    {
         return;
     }
-    if ((FingerIndex == TouchItem.FingerIndex) && (TouchItem.bMoved == false)) {
+    if ((FingerIndex == TouchItem.FingerIndex) && (TouchItem.bMoved == false))
+    {
         OnFire();
     }
     TouchItem.bIsPressed = true;
@@ -192,8 +209,10 @@ void ASphereAmbushCharacter::BeginTouch(const ETouchIndex::Type FingerIndex, con
     TouchItem.bMoved = false;
 }
 
-void ASphereAmbushCharacter::EndTouch(const ETouchIndex::Type FingerIndex, const FVector Location) {
-    if (TouchItem.bIsPressed == false) {
+void ASphereAmbushCharacter::EndTouch(const ETouchIndex::Type FingerIndex, const FVector Location)
+{
+    if (TouchItem.bIsPressed == false)
+    {
         return;
     }
     TouchItem.bIsPressed = false;
@@ -237,33 +256,41 @@ void ASphereAmbushCharacter::EndTouch(const ETouchIndex::Type FingerIndex, const
 //	}
 //}
 
-void ASphereAmbushCharacter::MoveForward(float Value) {
-    if (Value != 0.0f) {
+void ASphereAmbushCharacter::MoveForward(float Value)
+{
+    if (Value != 0.0f)
+    {
         // add movement in that direction
         AddMovementInput(GetActorForwardVector(), Value);
     }
 }
 
-void ASphereAmbushCharacter::MoveRight(float Value) {
-    if (Value != 0.0f) {
+void ASphereAmbushCharacter::MoveRight(float Value)
+{
+    if (Value != 0.0f)
+    {
         // add movement in that direction
         AddMovementInput(GetActorRightVector(), Value);
     }
 
 }
 
-void ASphereAmbushCharacter::TurnAtRate(float Rate) {
+void ASphereAmbushCharacter::TurnAtRate(float Rate)
+{
     // calculate delta for this frame from the rate information
     AddControllerYawInput(Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
 }
 
-void ASphereAmbushCharacter::LookUpAtRate(float Rate) {
+void ASphereAmbushCharacter::LookUpAtRate(float Rate)
+{
     // calculate delta for this frame from the rate information
     AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
 }
 
-bool ASphereAmbushCharacter::EnableTouchscreenMovement(class UInputComponent* PlayerInputComponent) {
-    if (FPlatformMisc::SupportsTouchInput() || GetDefault<UInputSettings>()->bUseMouseForTouch) {
+bool ASphereAmbushCharacter::EnableTouchscreenMovement(class UInputComponent* PlayerInputComponent)
+{
+    if (FPlatformMisc::SupportsTouchInput() || GetDefault<UInputSettings>()->bUseMouseForTouch)
+    {
         PlayerInputComponent->BindTouch(EInputEvent::IE_Pressed, this, &ASphereAmbushCharacter::BeginTouch);
         PlayerInputComponent->BindTouch(EInputEvent::IE_Released, this, &ASphereAmbushCharacter::EndTouch);
 

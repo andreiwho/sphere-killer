@@ -27,7 +27,7 @@ public:
 	void SpawnSpheres();
 	void ClearSpheres();
 	void NextWave();
-	void OnSphereDestroyed(float distance);
+	void OnSphereDestroyed(const FVector& position);
 private:
 	static constexpr float s_SphereZ = 300.0f;
 	
@@ -47,7 +47,11 @@ private:
 
 
 	UPROPERTY(EditAnywhere)
-	class UClass* SphereSpawnClass{nullptr};
+	class UClass* InnerSphereSpawnClass{nullptr};
+
+	UPROPERTY(EditAnywhere)
+	class UClass* OuterSphereSpawnClass{ nullptr };
+
 
 	class UInputComponent* PlayerInputComponent{ nullptr };
 

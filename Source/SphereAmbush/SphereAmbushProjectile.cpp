@@ -31,7 +31,7 @@ ASphereAmbushProjectile::ASphereAmbushProjectile()
 	ProjectileMovement->bShouldBounce = true;
 
 	// Die after 2 seconds by default
-	InitialLifeSpan = 2.0f;
+	InitialLifeSpan = 10.0f;
 }
 
 void ASphereAmbushProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)

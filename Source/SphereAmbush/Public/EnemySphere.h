@@ -11,43 +11,44 @@
 UCLASS()
 class SPHEREAMBUSH_API AEnemySphere : public AActor
 {
-	GENERATED_BODY()
-	
-public:	
-	// Sets default values for this actor's properties
-	AEnemySphere();
+    GENERATED_BODY()
+
+public:
+    // Sets default values for this actor's properties
+    AEnemySphere();
 
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+    // Called when the game starts or when spawned
+    virtual void BeginPlay() override;
 
-	UFUNCTION()
-	void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+    UFUNCTION()
+        void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-	virtual void Destroyed() override;
+public:
+    // Called every frame
+    virtual void Tick(float DeltaTime) override;
+    virtual void Destroyed() override;
+
+public:
+    float DistanceToPlayer{ 0.0f };
 
 private:
-	void NotifySpawner();
+    void NotifySpawner();
 
 private:
-	UPROPERTY(VisibleAnywhere)
-	class UStaticMeshComponent* StaticMesh{ nullptr };
+    UPROPERTY(VisibleAnywhere)
+    class UStaticMeshComponent* StaticMesh{ nullptr };
 
-	UPROPERTY(VisibleAnywhere)
-	class APlayerController* Player{ nullptr };
+    UPROPERTY(VisibleAnywhere)
+    class APlayerController* Player{ nullptr };
 
-	float DistanceToPlayer{ 0.0f };
+    UPROPERTY(EditAnywhere)
+    float ChasingSpeed = 10.0f;
 
-	UPROPERTY(EditAnywhere)
-	float ChasingSpeed = 10.0f;
+    class UPrimitiveComponent* Physics{ nullptr };
 
-	class UPrimitiveComponent* Physics{nullptr};
-	
-	class UAirWaving* AirWavingComponent{ nullptr };
+    class UAirWaving* AirWavingComponent{ nullptr };
 
-	UPROPERTY(EditAnywhere)
-	UEmitterOnDestroy* EmitterComponent;
+    UPROPERTY(EditAnywhere)
+    UEmitterOnDestroy* EmitterComponent;
 };

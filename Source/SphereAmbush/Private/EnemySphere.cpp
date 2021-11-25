@@ -13,15 +13,17 @@
 // Sets default values
 AEnemySphere::AEnemySphere()
     : StaticMesh(CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Static Mesh"))),
-        AirWavingComponent(CreateDefaultSubobject<UAirWaving>(TEXT("Waving"))),
-        EmitterComponent(CreateDefaultSubobject<UEmitterOnDestroy>(TEXT("Destroy Emitter"))) {
+    AirWavingComponent(CreateDefaultSubobject<UAirWaving>(TEXT("Waving"))),
+    EmitterComponent(CreateDefaultSubobject<UEmitterOnDestroy>(TEXT("Destroy Emitter")))
+{
 
     PrimaryActorTick.bCanEverTick = false;
     SetRootComponent(StaticMesh);
 }
 
 // Called when the game starts or when spawned
-void AEnemySphere::BeginPlay() {
+void AEnemySphere::BeginPlay()
+{
     Super::BeginPlay();
     Player = GetWorld()->GetFirstPlayerController();
     check(Player != nullptr);
@@ -36,29 +38,36 @@ void AEnemySphere::BeginPlay() {
 }
 
 
-void AEnemySphere::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit) {
-    if ((OtherActor != nullptr) && (OtherActor != this)) {
+void AEnemySphere::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+    if ((OtherActor != nullptr) && (OtherActor != this))
+    {
         // TODO: Check if this needs to be changed
-        if (Cast<ASphereAmbushProjectile>(OtherActor)) {
+        if (Cast<ASphereAmbushProjectile>(OtherActor))
+        {
             Destroy();
         }
     }
 }
 
-void AEnemySphere::Destroyed() {
+void AEnemySphere::Destroyed()
+{
     NotifySpawner();
     Super::Destroyed();
 }
 
-void AEnemySphere::NotifySpawner() {
+void AEnemySphere::NotifySpawner()
+{
     // The scene should have only one sphere spawner
-    for (TActorIterator<ASphereSpawner> it(GetWorld()); it; ++it) {
-        it->OnSphereDestroyed(DistanceToPlayer);
+    for (TActorIterator<ASphereSpawner> it(GetWorld()); it; ++it)
+    {
+        it->OnSphereDestroyed(GetActorLocation());
     }
 }
 
 // Called every frame
-void AEnemySphere::Tick(float DeltaTime) {
+void AEnemySphere::Tick(float DeltaTime)
+{
     Super::Tick(DeltaTime);
 }
 

@@ -20,16 +20,53 @@ void ASphereAmbushHUD::DrawHUD()
 	Super::DrawHUD();
 
 	// Draw very simple crosshair
+	{
+		// find center of the Canvas
+		const FVector2D Center(Canvas->ClipX * 0.5f, Canvas->ClipY * 0.5f);
 
-	// find center of the Canvas
-	const FVector2D Center(Canvas->ClipX * 0.5f, Canvas->ClipY * 0.5f);
 
-	// offset by half the texture's dimensions so that the center of the texture aligns with the center of the Canvas
-	const FVector2D CrosshairDrawPosition( (Center.X),
-										   (Center.Y + 20.0f));
+		// offset by half the texture's dimensions so that the center of the texture aligns with the center of the Canvas
+		const FVector2D CrosshairDrawPosition((Center.X),
+											  (Center.Y + 20.0f));
 
-	// draw the crosshair
-	FCanvasTileItem TileItem( CrosshairDrawPosition, CrosshairTex->Resource, FLinearColor::White);
-	TileItem.BlendMode = SE_BLEND_Translucent;
-	Canvas->DrawItem( TileItem );
+		// draw the crosshair
+		FCanvasTileItem TileItem(CrosshairDrawPosition, CrosshairTex->Resource, FLinearColor::White);
+		TileItem.BlendMode = SE_BLEND_Translucent;
+		Canvas->DrawItem(TileItem);
+	}
+
+
+	// Draw game stats
+	{
+		const FVector2D Center(Canvas->ClipX * 0.5f, Canvas->ClipY * 0.5f);
+		const FVector2D StatsDrawPosition(Center.X, Center.Y + 150.0f);
+	}
+}
+
+
+void ASphereAmbushHUD::UpdateInnerSphereCount(int value)
+{
+	if (StatsWidget)
+	{
+		StatsWidget->UpdateInnerSphereCount(value);
+	}
+}
+
+void ASphereAmbushHUD::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (GameStatsClass)
+	{
+		StatsWidget = CreateWidget<UGameStatsWidget>(GetWorld(), GameStatsClass);
+		if (StatsWidget)
+		{
+			StatsWidget->AddToViewport();
+		}
+	}
+}
+
+void ASphereAmbushHUD::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
 }
