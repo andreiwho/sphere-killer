@@ -40,4 +40,8 @@ private:
     // Static mesh component that will be used for the floor of the level
     UPROPERTY(VisibleAnywhere)
     class UInstancedStaticMeshComponent* InstancedMesh{ nullptr };
+
+    TArray<TFuture<TArray<FTransform>>> Transforms{};
+
+    bool bDelayed = true;
 };
