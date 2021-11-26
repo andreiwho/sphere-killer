@@ -7,6 +7,7 @@
 #include "DrawDebugHelpers.h"
 #include "EngineUtils.h"
 #include "Kismet/GameplayStatics.h"
+#include "../SphereAmbushHUD.h"
 
 // Sets default values
 ASphereSpawner::ASphereSpawner()
@@ -22,6 +23,9 @@ void ASphereSpawner::BeginPlay()
     Super::BeginPlay();
 
     // Spawn spheres on begin play
+    HUD = Cast<ASphereAmbushHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
+    check(HUD);
+
     SpawnSpheres();
 }
 
@@ -162,6 +166,8 @@ void ASphereSpawner::SpawnSpheres()
     {
         UGameplayStatics::PlaySoundAtLocation(GetWorld(), SpawnSound, { 0.0f, 0.0f, 0.0f }, 1.0f, FMath::RandRange(0.8f, 1.2f));
     }
+
+    HUD->SetSphereCount(CurrentInnerSpheres);
 }
 
 void ASphereSpawner::ClearSpheres()
@@ -172,6 +178,7 @@ void ASphereSpawner::ClearSpheres()
         it->Destroy();
     }
 }
+
 
 void ASphereSpawner::NextWave()
 {
@@ -193,7 +200,10 @@ void ASphereSpawner::NextWave()
     OuterSpawnRadius += static_cast<int>(static_cast<float>(OuterSpawnRadius) * WaveRadiusChangeRate);
 
     SpawnSpheres();
+
+    HUD->SetWave(WaveIndex);
 }
+
 
 void ASphereSpawner::OnSphereDestroyed(const FVector& position)
 {
@@ -202,6 +212,10 @@ void ASphereSpawner::OnSphereDestroyed(const FVector& position)
     if (distance <= InnerSpawnRadius + 50.0f)
     {
         CurrentInnerSpheres--;
+        HUD->SetSphereCount(CurrentInnerSpheres);
+        
+        Score += InnerSphereScore;
+        HUD->SetScore(Score);
         UE_LOG(LogTemp, Warning, TEXT("Inner sphere destroyed, %d left"), CurrentInnerSpheres);
         if (CurrentInnerSpheres == 0)
         {
@@ -209,7 +223,8 @@ void ASphereSpawner::OnSphereDestroyed(const FVector& position)
         }
     } else
     {
-        // Add logic to increase bonus points at some point in time
+        Score += OuterSphereScore;
+        HUD->SetScore(Score);
     }
 }
 

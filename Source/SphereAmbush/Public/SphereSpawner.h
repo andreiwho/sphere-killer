@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "../SphereAmbushHUD.h"
 #include "SphereSpawner.generated.h"
 
 UCLASS()
@@ -52,6 +53,7 @@ private:
 	UPROPERTY(EditAnywhere)
 	class UClass* OuterSphereSpawnClass{ nullptr };
 
+	ASphereAmbushHUD* HUD{ nullptr };
 
 	class UInputComponent* PlayerInputComponent{ nullptr };
 
@@ -85,6 +87,11 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	class USoundBase* SpawnSound{ nullptr };
+
+	int Score{ 0 };
+
+	const int InnerSphereScore = 100;
+	const int OuterSphereScore = 300;
 
 private:
 	int CurrentInnerSpheres{ 0 };

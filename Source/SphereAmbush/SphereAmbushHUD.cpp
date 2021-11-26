@@ -40,9 +40,43 @@ void ASphereAmbushHUD::DrawHUD()
 void ASphereAmbushHUD::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (GameStatsClass)
+	{
+		GameStats = CreateWidget<UGameStatsWidget>(GetWorld(), GameStatsClass);
+
+		if (GameStats)
+		{
+			GameStats->AddToViewport();
+		}
+	}
 }
 
 void ASphereAmbushHUD::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+}
+
+void ASphereAmbushHUD::SetSphereCount(int count)
+{
+	if (GameStats)
+	{
+		GameStats->SetSphereCount(count);
+	}
+}
+
+void ASphereAmbushHUD::SetScore(int score)
+{
+	if (GameStats)
+	{
+		GameStats->SetScore(score);
+	}
+}
+
+void ASphereAmbushHUD::SetWave(int wave)
+{
+	if (GameStats)
+	{
+		GameStats->SetWave(wave);
+	}
 }
